@@ -13,4 +13,7 @@ interface ApiService {
         @Query("page_limit") pageLimit: Int,
         @Query("section") section: String
     ): Response<Resp>
+
+    @GET("product/telefon-sotovyy-samsung-sm-s-928-galaxy-s24-ultra-5g-256gb-bzkgs-titanium-black")
+    suspend fun getSmartphonesDetails() : Response<ItemResp>
 }

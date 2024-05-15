@@ -11,4 +11,6 @@ class MainRepoImpl(private val service: ApiService) : MainRepo {
         pageLimit: Int,
         section: String
     ): Response<Resp> = service.getSmartphones(page = page, pageLimit = pageLimit, section = section)
+
+    override suspend fun getSmartPhoneDetails(): Response<ItemResp> = service.getSmartphonesDetails()
 }
