@@ -6,46 +6,49 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mechtatz.R
 import com.example.mechtatz.databinding.FragmentMainBinding
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
+@AndroidEntryPoint
 class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
-    private val viewmodel by viewModels<MainViewmodel>()
-    private lateinit var adapter: SmartPhonesAdapter
+    private val viewmodel: MainViewmodel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-
-    }
+    @Inject
+    lateinit var adapter: SmartPhonesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
-        adapter = SmartPhonesAdapter(requireContext())
-        binding.smartPhonesRv.adapter = adapter
-        binding.smartPhonesRv.apply {
-            layoutManager = GridLayoutManager(requireContext(), 2, LinearLayoutManager.VERTICAL, false)
-            adapter = adapter
-        }
-        viewmodel.getSmartphones(page = 1, pageLimit = 30, section = "smartfony")
-        viewmodel.smartPhones.observe(viewLifecycleOwner) {
-            adapter.setList(it.data.items)
-        }
-
-        adapter.onItemClick = { order ->
-            findNavController().navigate(R.id.action_mainFragment_to_detailsFragment)
-        }
         return binding.root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.apply {
+            lifecycleScope.launchWhenCreated {
+                viewmodel.smartPhones.collect {
+                    adapter.submitData(it)
+                }
+            }
+
+            smartPhonesRv.apply {
+                layoutManager = GridLayoutManager(requireContext(), 2)
+                adapter = adapter }
+        }
+    }
+
 
     companion object {
 

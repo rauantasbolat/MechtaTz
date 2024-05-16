@@ -18,38 +18,19 @@ class DetailsFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewmodel by viewModels<DetailsViewModel>()
     private lateinit var adapter: SmartPhoneDetailAdapter
-
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private var product: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        product = arguments?.getString("itemDetail")
         _binding = FragmentDetailsBinding.inflate(inflater, container, false)
-        viewmodel.getSmartPhoneDetails()
-        viewmodel.smartPhone.observe(viewLifecycleOwner){
-            adapter = SmartPhoneDetailAdapter(requireContext())
-            binding.detailsRecyclerView.adapter = adapter
 
-            adapter.setList(it)
-
-            binding.detailsRecyclerView.apply {
-                layoutManager = LinearLayoutManager(requireContext())
-                adapter = adapter
-            }
-
-            Log.d("DetaildFragment", it.toString())
-        }
 
 
 
         return binding.root
     }
 
-    companion object {
-    }
 }
